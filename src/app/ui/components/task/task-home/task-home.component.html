@@ -1,0 +1,166 @@
+<section class="challenge-shell" aria-labelledby="tasks-page-title">
+  <div class="container-xl">
+    <header class="challenge-panel page-header p-4 p-lg-5 mb-4">
+      <div class="d-flex flex-column flex-lg-row gap-3 align-items-lg-center justify-content-between">
+        <div>
+          <p class="eyebrow mb-2">Página principal</p>
+          <h1 id="tasks-page-title" class="mb-2"> Administrador de tareas
+          </h1>
+          <p class="text-secondary mb-0">
+            Sesión iniciada como <strong>{{ userEmail }}</strong>
+          </p>
+        </div>
+
+        <div class="d-flex gap-2">
+          <span class="challenge-chip" aria-live="polite">{{ paginationMeta.total }} tareas</span>
+          <button type="button" class="challenge-secondary-btn" (click)="logout()">
+            Volver al ingreso
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="row g-4 align-items-start">
+      <aside class="col-lg-4">
+        <div class="challenge-panel p-4 composer-card" [attr.aria-busy]="isSaving">
+          <h2 id="create-task-title" class="h4 mb-3">Crear una nueva tarea</h2>
+          <form [formGroup]="taskForm" (ngSubmit)="createTask()" class="d-grid gap-3" aria-labelledby="create-task-title">
+            <div>
+              <label class="form-label fw-semibold" for="title">Título</label>
+              <input id="title" class="form-control challenge-input" formControlName="title" [attr.aria-invalid]="taskForm.controls.title.touched && taskForm.controls.title.invalid" />
+            </div>
+
+            <div>
+              <label class="form-label fw-semibold" for="description">Descripción</label>
+              <textarea id="description" rows="4" class="form-control challenge-textarea" formControlName="description" [attr.aria-invalid]="taskForm.controls.description.touched && taskForm.controls.description.invalid"></textarea>
+            </div>
+
+            <button type="submit" class="challenge-primary-btn" [disabled]="isSaving" [attr.aria-busy]="isSaving">
+              {{ isSaving ? 'Guardando...' : 'Agregar tarea' }}
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <section class="col-lg-8" aria-labelledby="tasks-list-title">
+        <div class="text-danger small mb-3" *ngIf="errorMessage" role="alert" aria-live="assertive">
+          {{ errorMessage }}
+        </div>
+
+        <div class="challenge-panel p-3 mb-3">
+          <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
+            <div>
+              <h2 id="tasks-list-title" class="h5 mb-1">Filtrar tareas</h2>
+              <p class="text-secondary mb-0">
+                Cambia el estado y navega por páginas.
+              </p>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+              <label class="form-label fw-semibold mb-0" for="task-filter-status">Estado</label>
+              <select id="task-filter-status" class="form-select challenge-input" [ngModel]="selectedStatusFilter" [ngModelOptions]="{ standalone: true }" aria-controls="tasks-list" (ngModelChange)="onStatusFilterChange($event)">
+                <option *ngFor="let option of taskStatusFilterOptions" [ngValue]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="tasks-list" class="task-grid" *ngIf="!isLoading; else loadingState" [attr.aria-busy]="isLoading">
+          <article class="challenge-panel task-card p-4" *ngFor="let task of tasks; trackBy: trackByTaskId" [attr.aria-labelledby]="'task-title-' + task.id">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+              <div class="m-0">
+                <label class="form-label fw-semibold mb-2" [for]="'task-status-' + task.id">Estado</label>
+                <select class="form-select challenge-input" [id]="'task-status-' + task.id" [ngModel]="task.status" [ngModelOptions]="{ standalone: true }" [attr.aria-label]="'Cambiar estado de la tarea ' + task.title" (ngModelChange)="changeTaskStatus(task, $event)">
+                  <option *ngFor="let option of taskStatusOptions" [ngValue]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="task-actions d-flex gap-2">
+                <button type="button" class="challenge-secondary-btn action-btn" [attr.aria-label]="'Editar tarea ' + task.title" (click)="startEdit(task)">
+                  Editar
+                </button>
+                <button type="button" class="challenge-danger-btn action-btn" [attr.aria-label]="'Eliminar tarea ' + task.title" (click)="deleteTask(task)">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+
+            <ng-container *ngIf="editingTaskId !== task.id; else editState">
+              <p class="mb-2">
+                <span class="challenge-chip">{{ getStatusLabel(task.status) }}</span>
+              </p>
+              <h3 [id]="'task-title-' + task.id" class="h5 mb-2" [class.task-done]="task.status === taskStatus.COMPLETED">
+                {{ task.title }}
+              </h3>
+              <p class="text-secondary mb-3">{{ task.description }}</p>
+              <p class="task-date mb-0">
+                Creada {{ task.createdAt | date: 'medium' }}
+              </p>
+            </ng-container>
+
+            <ng-template #editState>
+              <form [formGroup]="editForm" class="d-grid gap-3" [attr.aria-label]="'Editar tarea ' + task.title">
+                <div>
+                  <label class="form-label fw-semibold" [for]="'edit-title-' + task.id">Título</label>
+                  <input class="form-control challenge-input" [id]="'edit-title-' + task.id" formControlName="title" [attr.aria-invalid]="editForm.controls.title.touched && editForm.controls.title.invalid" />
+                </div>
+
+                <div>
+                  <label class="form-label fw-semibold" [for]="'edit-description-' + task.id">Descripción</label>
+                  <textarea rows="4" class="form-control challenge-textarea" [id]="'edit-description-' + task.id" formControlName="description" [attr.aria-invalid]="editForm.controls.description.touched && editForm.controls.description.invalid"></textarea>
+                </div>
+
+                <div>
+                  <label class="form-label fw-semibold" [for]="'edit-status-' + task.id">Estado</label>
+                  <select class="form-select challenge-input" [id]="'edit-status-' + task.id" formControlName="status">
+                    <option *ngFor="let option of taskStatusOptions" [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="challenge-primary-btn" (click)="saveEdit(task)">
+                    Guardar
+                  </button>
+                  <button type="button" class="challenge-secondary-btn" (click)="cancelEdit()">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </ng-template>
+          </article>
+
+          <div class="challenge-panel empty-state p-5 text-center" *ngIf="!tasks.length" role="status" aria-live="polite">
+            <h3 class="h5 mb-2">Aún no hay tareas</h3>
+            <p class="text-secondary mb-0">
+              Crea la primera desde el panel de la izquierda.
+            </p>
+          </div>
+        </div>
+
+        <nav class="d-flex justify-content-end align-items-center gap-2 mt-3" *ngIf="paginationMeta.totalPages > 1" aria-label="Paginación de tareas">
+          <button type="button" class="challenge-secondary-btn" [disabled]="paginationMeta.page === 1" (click)="goToPage(paginationMeta.page - 1)">
+            Anterior
+          </button>
+          <span class="challenge-chip" aria-live="polite">
+            Página {{ paginationMeta.page }} de {{ paginationMeta.totalPages }}
+          </span>
+          <button type="button" class="challenge-secondary-btn" [disabled]="paginationMeta.page === paginationMeta.totalPages" (click)="goToPage(paginationMeta.page + 1)">
+            Siguiente
+          </button>
+        </nav>
+      </section>
+    </main>
+  </div>
+</section>
+
+<ng-template #loadingState>
+  <div class="challenge-panel p-5 text-center" role="status" aria-live="polite">
+    <p class="mb-0">Cargando tareas...</p>
+  </div>
+</ng-template>

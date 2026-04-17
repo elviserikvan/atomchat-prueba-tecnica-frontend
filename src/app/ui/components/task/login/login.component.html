@@ -1,0 +1,44 @@
+<section class="challenge-shell d-flex align-items-center justify-content-center" aria-labelledby="login-title">
+  <div class="challenge-panel login-card p-4 p-md-5" [attr.aria-busy]="isSubmitting || isFirebaseSubmitting">
+    <div class="login-copy mb-4">
+      <p class="eyebrow mb-2">Technical Challenge</p>
+      <h1 id="login-title" class="mb-3">Gestión de tareas con inicio de sesión</h1>
+      <p id="login-description" class="text-secondary mb-0">
+        Ingresa tu correo. Si el usuario no existe, la aplicación te
+        preguntará si deseas crearlo.
+      </p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" class="d-grid gap-3" aria-labelledby="login-title" aria-describedby="login-description">
+      <div>
+        <label class="form-label fw-semibold" for="email">Correo electrónico</label>
+        <input id="email" type="email" formControlName="email" class="form-control challenge-input" placeholder="tu@correo.com" autocomplete="email" [attr.aria-invalid]="loginForm.controls.email.touched && loginForm.controls.email.invalid" [attr.aria-describedby]="loginForm.controls.email.touched && loginForm.controls.email.invalid ? 'email-error' : 'login-description'" />
+        <div id="email-error" class="text-danger small mt-2" *ngIf="
+            loginForm.controls.email.touched && loginForm.controls.email.invalid
+          " role="alert">
+          Ingresa un correo electrónico válido.
+        </div>
+      </div>
+
+      <div class="text-danger small" *ngIf="errorMessage" role="alert" aria-live="assertive">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="challenge-primary-btn w-100" [disabled]="isSubmitting" [attr.aria-busy]="isSubmitting">
+        {{ isSubmitting ? 'Validando acceso...' : 'Continuar' }}
+      </button>
+
+      <div class="login-divider" aria-hidden="true">
+        <span>o</span>
+      </div>
+
+      <button type="button" class="challenge-secondary-btn w-100" [disabled]="isFirebaseSubmitting" [attr.aria-busy]="isFirebaseSubmitting" (click)="loginWithGoogle()">
+        {{
+        isFirebaseSubmitting
+        ? 'Conectando con Google...'
+        : 'Continuar con Google'
+        }}
+      </button>
+    </form>
+  </div>
+</section>

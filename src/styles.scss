@@ -1,0 +1,199 @@
+:root {
+  --font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --page-bg: radial-gradient(
+    circle at top,
+    #fff9ef 0%,
+    #f4efe7 45%,
+    #e7dfd4 100%
+  );
+  --panel-bg: rgba(255, 252, 247, 0.92);
+  --panel-border: rgba(70, 52, 31, 0.12);
+  --panel-hover-shadow: 0 28px 65px rgba(43, 33, 22, 0.15);
+  --text-main: #1e1a16;
+  --text-muted: #65594d;
+  --brand: #b95c2e;
+  --brand-dark: #8f441f;
+  --brand-soft: rgba(185, 92, 46, 0.12);
+  --accent: #1e7a65;
+  --accent-soft: rgba(30, 122, 101, 0.12);
+  --danger: #b43f3f;
+  --danger-dark: #8d3030;
+  --shadow-soft: 0 24px 60px rgba(43, 33, 22, 0.12);
+  --input-border: rgba(70, 52, 31, 0.16);
+  --input-border-focus: rgba(185, 92, 46, 0.4);
+  --input-outline: rgba(185, 92, 46, 0.18);
+  --surface-plain: rgba(255, 255, 255, 0.85);
+  --surface-soft: rgba(255, 255, 255, 0.78);
+  --surface-chip: rgba(255, 255, 255, 0.65);
+  --transition-fast: 0.2s ease;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  background: var(--page-bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.challenge-shell {
+  min-height: 100vh;
+  padding: var(--space-5) var(--space-3);
+}
+
+.eyebrow {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.challenge-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
+}
+
+.challenge-input,
+.challenge-textarea,
+.challenge-select {
+  width: 100%;
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) 14px;
+  background: var(--surface-plain);
+  color: var(--text-main);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.challenge-input:focus,
+.challenge-textarea:focus,
+.challenge-select:focus {
+  outline: 2px solid var(--input-outline);
+  border-color: var(--input-border-focus);
+  box-shadow: none;
+}
+
+.challenge-primary-btn {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) 18px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.challenge-secondary-btn {
+  border: 1px solid rgba(70, 52, 31, 0.14);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) 18px;
+  color: var(--text-main);
+  background: var(--surface-soft);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.challenge-danger-btn {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: #fff;
+  background: var(--danger);
+  transition:
+    transform var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.challenge-primary-btn:hover,
+.challenge-secondary-btn:hover,
+.challenge-danger-btn:hover {
+  transform: translateY(-1px);
+}
+
+.challenge-primary-btn:hover {
+  box-shadow: 0 18px 30px rgba(143, 68, 31, 0.22);
+}
+
+.challenge-secondary-btn:hover {
+  box-shadow: 0 12px 24px rgba(43, 33, 22, 0.08);
+}
+
+.challenge-danger-btn:hover {
+  background: var(--danger-dark);
+}
+
+.challenge-primary-btn:disabled,
+.challenge-secondary-btn:disabled,
+.challenge-danger-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+.challenge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.challenge-box {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: var(--shadow-soft);
+}
+
+.challenge-box--plain {
+  background: var(--surface-chip);
+}
+
+.challenge-text-muted {
+  color: var(--text-muted);
+}
+
+.challenge-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 768px) {
+  .challenge-shell {
+    padding: var(--space-4) var(--space-2);
+  }
+}
